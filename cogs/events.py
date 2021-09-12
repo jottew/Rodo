@@ -78,9 +78,10 @@ class Events(core.Cog):
                 commands.CommandNotFound)):
             return
 
-        return await ctx.send(
+        await ctx.send(
             f"Some weird error occured, you can send it to my developer, if you want\n```py\n{error.__class__.__name__}: {str(error)}\n```"
         )
+        raise error
 
 def setup(bot):
     bot.add_cog(Events(bot))
