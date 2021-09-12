@@ -2,6 +2,7 @@ import nest_asyncio
 import asyncpg
 import aiohttp
 import mystbin
+import random
 import utils
 import yaml
 import ulid
@@ -9,7 +10,7 @@ import core
 import os
 
 from defectio.types.payloads import MessagePayload
-from defectio.ext import commands
+from defectio.ext import commands, tasks
 from typing import Optional, Any
 
 
@@ -37,12 +38,29 @@ class Rodo(commands.Bot):
             )
         )
 
+    @tasks.loop(seconds=10)
+    async def update_status(self):
+        await self.wait_until_ready()
+        
+        texts = [
+            "storing",
+            "watching",
+            "guarding"
+        ]
+
+        count = (await self.db.fetchrow("SELECT count(*) FROM todo"))["count"]
+        await self.user.edit(
+            status=f"rodo help | {random.choice(texts)} {count} tasks"
+        )
+
     async def get_context(self, message, *, cls=core.Context):
         return await super().get_context(message, cls=cls)
 
     async def initialize(self):
         async with aiohttp.ClientSession() as session:
             self.session = session
+
+            self.update_status.start()
 
             await self.db.execute(
                 """
