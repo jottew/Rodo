@@ -41,7 +41,7 @@ class Rodo(commands.Bot):
     @tasks.loop(seconds=10)
     async def update_status(self):
         await self.wait_until_ready()
-        
+
         texts = [
             "storing",
             "watching",
@@ -50,7 +50,7 @@ class Rodo(commands.Bot):
 
         count = (await self.db.fetchrow("SELECT count(*) FROM todo"))["count"]
         await self.user.edit(
-            status=f"rodo help | {random.choice(texts)} {count} tasks"
+            status=f"rodo help | {random.choice(texts).title()} {count} tasks"
         )
 
     async def get_context(self, message, *, cls=core.Context):
@@ -104,7 +104,8 @@ class Rodo(commands.Bot):
     
 
 bot = Rodo(
-    command_prefix="rodo "
+    command_prefix="rodo ",
+    strip_after_prefix=True
 )
 
 for i in os.listdir("./cogs"):
