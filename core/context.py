@@ -12,7 +12,7 @@ class Context(commands.Context):
     async def send(self, content: str = None, cache: bool = True, *args, **kwargs):
         if content is not None:
             mod = discord.utils.remove_markdown(content).strip()
-            if len(mod) > 2000:
+            if len(content) > 2000:
                 content = str(
                     await self.bot.myst.post(
                         mod
