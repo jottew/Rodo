@@ -18,6 +18,8 @@ nest_asyncio.apply()
 class Rodo(commands.Bot):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.owner_id = "01FE6JZP6QDH5YKNHATCE0PDVH" # put your user id here
+
         self.config = yaml.load(
             open("config.yaml"),
             Loader=yaml.Loader
@@ -28,7 +30,7 @@ class Rodo(commands.Bot):
                 database="rodo",
                 host="localhost",
                 port="5432",
-                user=self.config["DATABASE"]["USER"],
+                user="rodo",
                 password=self.config["DATABASE"]["PASSWORD"]
             )
         )

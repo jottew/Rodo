@@ -12,9 +12,10 @@ class Todo(core.Cog):
     def __init__(self, bot):
         self.bot: Rodo = bot
         self.amount_regex = re.compile(r"(\d+)-(\d+)")
-        self.time_str = "%d:%m:%y %H:%M:%S"
+        self.time_str = "%d.%m.%y %H:%M:%S"
 
     @commands.command(description="Adds a todo task.")
+    #@commands.cooldown(1, 5, commands.BucketType.user)
     async def add(self, ctx: Context, *, task: str):
         result = await self.bot.db.fetchrow(
             """
@@ -30,35 +31,38 @@ class Todo(core.Cog):
         )
         count = result["count"]+1
         
-        await ctx.send(f"✅ Added task {count} - {task}")
+        await ctx.send(f"✅ Added task {count} - `{task}`")
 
     @commands.command(description="Lists all todo tasks.")
+    #@commands.cooldown(1, 5, commands.BucketType.user)
     async def list(self, ctx: Context, amount: str = "1-10"):
         reg = self.amount_regex.findall(amount)
         if not reg:
             return await ctx.send("❌ Invalid amount, please use something like `1-10`")
-        start, end = (int(i)-1 for i in reg[0])
+        start, end = int(reg[0][0])-1, int(reg[0][1])
         if start <= -1 or end <= -1:
             return await ctx.send("❌ Invalid amount, please use something like `1-10`")
         if end > 10:
             return await ctx.send("❌ Cannot show more than 10 tasks")
 
-        result = (await self.bot.db.fetch(
+        result = await self.bot.db.fetch(
             "SELECT * FROM todo WHERE user_id = $1",
             ctx.author.id
-        ))[start:end]
+        )
+        cut = result[start:end]
 
         if not result:
             return await ctx.send("❌ Could not find any tasks")
 
         text = "\n".join(
-            f"{v['created_at'].strftime(self.time_str)} {i+1}: {v['description']}"
-            for i, v in enumerate(result)
+            f"{v['created_at'].strftime(self.time_str)} - {result.index(v)+1}: {v['description']}"
+            for v in cut
         )
 
         await ctx.send(f"```\n{text}\n```")
 
     @commands.command(aliases=["delete"])
+    #@commands.cooldown(1, 5, commands.BucketType.user)
     async def remove(self, ctx: Context, task: int):
         result = await self.bot.db.fetch(
             "SELECT * FROM todo WHERE user_id = $1",
@@ -74,6 +78,7 @@ class Todo(core.Cog):
         await ctx.send(f"Deleted task **{task}** (`{task_['description']}`)")
 
     @commands.command()
+    #@commands.cooldown(1, 5, commands.BucketType.user)
     async def clear(self, ctx: Context):
         await ctx.send(
             f"<@{ctx.author.id}>, Are you sure you want to clear all of your tasks? "
