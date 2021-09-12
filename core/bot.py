@@ -1,6 +1,7 @@
 import nest_asyncio
 import asyncpg
 import aiohttp
+import mystbin
 import utils
 import yaml
 import ulid
@@ -20,11 +21,12 @@ class Rodo(commands.Bot):
         super().__init__(*args, **kwargs)
         self.owner_id = "01FE6JZP6QDH5YKNHATCE0PDVH" # put your user id here
 
+        self.myst = mystbin.Client()
+
         self.config = yaml.load(
             open("config.yaml"),
             Loader=yaml.Loader
         )
-
         self.db: asyncpg.Pool = self.loop.run_until_complete(
             asyncpg.create_pool(
                 database="rodo",
