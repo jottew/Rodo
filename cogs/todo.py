@@ -65,7 +65,7 @@ class Todo(core.Cog):
             for v in cut
         )
 
-        await ctx.send(f"```\n{text}\n```")
+        await ctx.send(f"{len(result)} Tasks\n\n```\n{text}\n```")
 
     @commands.command(aliases=["delete"])
     #@commands.cooldown(1, 5, commands.BucketType.user)
