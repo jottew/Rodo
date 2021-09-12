@@ -17,6 +17,10 @@ class Todo(core.Cog):
     @commands.command(description="Adds a todo task.")
     #@commands.cooldown(1, 5, commands.BucketType.user)
     async def add(self, ctx: Context, *, task: str):
+        limit = 128
+        if len(task) > limit:
+            return await ctx.send(f"❌ Text cannot be longer than `{limit}` characters")
+
         result = await self.bot.db.fetchrow(
             """
             WITH rows AS (

@@ -79,7 +79,7 @@ class Events(core.Cog):
             return
 
         return await ctx.send(
-            f"Some weird error occured, you can send it to my developer, if you want\n{error.__class__.__name__}: {str(error)}"
+            f"Some weird error occured, you can send it to my developer, if you want\n```py\n{error.__class__.__name__}: {str(error)}\n```"
         )
 
 def setup(bot):
