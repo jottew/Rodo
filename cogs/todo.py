@@ -44,6 +44,8 @@ class Todo(core.Cog):
             return await ctx.send("❌ Invalid amount, please use something like `1-10`")
         if end > 10:
             return await ctx.send("❌ Cannot show more than 10 tasks")
+        if start >= end:
+            return await ctx.send("❌ Start cannot be higher or equals to end")
 
         result = await self.bot.db.fetch(
             "SELECT * FROM todo WHERE user_id = $1",
